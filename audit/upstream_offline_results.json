@@ -1,6 +1,6 @@
 {
   "date": "2026-11-19",
-  "upstream_commit": null,
+  "upstream_commit": "eec58a24516bfcd4554807b0a2b9d08b04eafd1c",
   "source_has_git_directory": false,
   "source_sha256": {
     "space/evaluate_qas.py": "3f3903178a4c3046f59e04f5a497cb8917fd7b15bcd23d7d7e8d6c5133ff9615",

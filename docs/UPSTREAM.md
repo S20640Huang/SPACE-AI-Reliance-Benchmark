@@ -1,25 +1,19 @@
 # Upstream reconciliation
 
-Source reviewed: supplied ml-space-benchmark-main archive, 2026-11-19. No .git directory; exact commit remains unresolved. Six original file hashes are in audit/upstream_offline_results.json. File hashes identify content but do not prove a Git commit.
+Upstream repository: `https://github.com/apple-aiml-research/ml-space-benchmark` at commit `eec58a24516bfcd4554807b0a2b9d08b04eafd1c`. All six SHA-256 digests recorded in `audit/upstream_offline_results.json` match this commit byte-for-byte.
 
-Call chain: evaluate_qas.py -> QA_Agent.get_prediction -> utils/model.py -> utils/openai_api.py -> chat.completions.create. Per-item reset creates independent input. The answer argument is logged after the model response, not placed in model messages. The full JSON record pool is evaluated with a default 8 workers.
+Upstream call chain: `evaluate_qas.py` -> `QA_Agent.get_prediction` -> `utils/model.py` -> `utils/openai_api.py` -> `chat.completions.create`. Each item runs in an isolated single-turn user message; the ground-truth `answer` is written only to the local transcript after model prediction.
 
-## Reuse and changes
+## Reuse and adaptations
 
-- space_adapter.py adapts the original question parsing branch; source-order control flow is retained. Changes: resolve relative image paths under an explicit root, reject out-of-root paths, reject unsupported video, supply model/detail directly.
-- vendor/space_functions.py extracts encode_image, is_int and parse_answer_from_response. Only the unused parser self parameter is removed; Python AST formatting changes are cosmetic.
-- Original JPEG encoder is used. The imageio RGB reader is replaced by direct Pillow RGB conversion. The original source's encoder and supplied pool were compared offline using a substitute decoder, not a reproduced imageio installation.
-- Original image_detail=low retained. Original GPT QA max_tokens=4096, temperature=0.5 and frequency_penalty=0 are historical values only, NOT silently transferred to the unresolved new model.
-- Responses content typing replaces the original mixed strings/image dictionaries. New model/endpoint compatibility needs live testing.
-- Original parser/equality score is primary; strict diagnostics are secondary. Original exception retries are replaced with explicit no-auto-retry logging, pending policy review.
-- New logging stores actual request/response data and versions; no credentials in archives.
+- `space_adapter.py` retains the segment-ordering control flow from `evaluate_qas.py`, adding explicit root containment checks, Pillow RGB decoding in place of `imageio.imread(..., pilmode="RGB")`, and rejection of video markers.
+- `vendor/space_functions.py` extracts `encode_image`, `is_int`, and `parse_answer_from_response` with Apple copyright and license notices intact.
+- `benchmark.py` uses the official `openai` Python SDK against the `Responses` API (`responses.with_raw_response.create`) on Python 3.15, translating string and `image_url` entries into `input_text` and `input_image` parts while preserving `image_detail="low"` and exact JPEG payloads.
+- Upstream Chat Completions defaults (`temperature=0.5`, `max_tokens=4096`, `frequency_penalty=0.0`) are omitted because frontier reasoning models use `reasoning.effort` and count reasoning tokens inside `max_output_tokens`.
+- `selection.py` adds deterministic option-permutation grouping (`option_group_sha256`), stratified candidate preselection (`select-candidates`), and five-run stability filtering (`check-stability`).
 
-No original source files are modified. Apple notices and license are retained for adapted/extracted code. No claim of reproducing original model accuracies or every published setting is made.
+## Offline verification
 
-## Offline evidence
-
-- check_upstream_offline.py: selected original functions with fake model/dialog/image objects; first two records per category; gold-label mutation leaves model messages unchanged.
-- verify_parity.py: all source question lists, ordered text and JPEG payloads compared with the original loader/encoder path using a substituted RGB decoder. Original parser compared on 15 representative response strings, including malformed/permissive cases.
-- tests/: network-body label isolation, source-folder category mapping, ordering, parsing, blocked live config, failure/resume protection and primary denominator checks.
-
-Outstanding: exact upstream commit, actual model/account access/settings, live technical testing, recovery decision and candidate/stability protocol. upstream_implementation_checked=true means this reconciliation is complete; it does not mean other gates are satisfied.
+- `audit/check_upstream_offline.py`: executes extracted upstream AST functions with mock client objects on the first two items per category and verifies that mutating gold labels leaves outbound payloads unchanged.
+- `audit/verify_parity.py`: verifies exact text-order and JPEG base64 parity across all 1,488 records (5,240 image occurrences) and 15 parser edge cases.
+- `tests/`: verifies Python 3.15 gates, `.gitignore` isolation of `local/`, `runs/`, and `data/`, OpenAI SDK raw logging and `--retry-technical-errors` archiving, `incomplete` token-limit scoring, permutation deduplication, and 4-of-5 stability filtering.

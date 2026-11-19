@@ -1,0 +1,16 @@
+[project]
+name = "space-ai-reliance-benchmark"
+version = "0.2.0"
+description = "SPACE visual QA benchmarking and stimulus selection for human-AI reliance studies"
+readme = "README.md"
+requires-python = ">=3.15"
+dependencies = [
+    "numpy>=2.5.2",
+    "openai>=3.55.0",
+    "Pillow>=13.0.0",
+]
+
+[tool.ruff]
+target-version = "py315"
+preview = true
+line-length = 110

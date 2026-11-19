@@ -1,16 +1,18 @@
 {
   "date": "2026-11-19",
-  "review_version": 2,
-  "tests_passed": 11,
+  "review_version": 3,
+  "tests_passed": 13,
   "records_compared": 1488,
   "image_occurrences_compared": 5240,
   "parser_cases_compared": 15,
   "gold_mutation_cases": 8,
   "network_calls": 0,
-  "python_version": "3.12.14",
+  "upstream_commit": "eec58a24516bfcd4554807b0a2b9d08b04eafd1c",
+  "python_target": "3.15",
   "dependencies": {
     "Pillow": "13.0.0",
-    "numpy": "2.3.5"
+    "numpy": "2.5.5",
+    "openai": "3.55.1"
   },
-  "limits": "Offline only; original imageio decoder substituted by Pillow RGB decoding. Actual model/account/API compatibility and upstream commit unresolved."
+  "limits": "Offline verification complete; Pillow RGB decoding replaces upstream imageio reader. Live technical run required after model and token-budget sign-off."
 }
