@@ -1,20 +1,20 @@
 # Configuration fields
 
-Delivered config is review_pending_model_and_parameters; live execution is intentionally blocked.
+The repository ships with `status` set to `"review_pending_model_and_parameters"` so live API calls remain blocked until final configuration sign-off.
 
-- model_snapshot: null pending verified exact ID. The current guard requires a date in the ID to reflect Mark's request. If a non-dated fixed-version alternative is explicitly agreed, revise the guard and document evidence; never invent an ID.
-- reasoning_effort: null pending decision. Null omits the parameter; it does NOT set reasoning to none. Medium was the user's initial preference.
-- max_output_tokens: null pending adequate model-supported budget. Do not set to 1 based on an option-only final answer.
-- image_detail: low to align with original GPT QA configuration. Any later change must be documented before formal collection.
-- concurrency: 3 independent requests, conservative proposed throughput; no shared context. Use one process per run ID.
-- timeout_seconds: 180 proposed. Timeouts remain unresolved technical events, not assumed unprocessed requests.
-- upstream_commit: null pending actual source commit. Source SHA-256 values are recorded separately.
-- upstream_implementation_checked: true means source comparison and documented adapter reconciliation completed, not model API verification.
-- model_settings_verified: false until model access, parameter and endpoint checks complete.
-- failure_policy_approved: false until the no-automatic-retry proposal or an implemented alternative is agreed.
-- status: ready only after required checks. Keep current review status while sharing with Mark.
-- protocol_version/parser_version: review-2 / space-primary-strict-secondary-v2.
+- `model_snapshot`: `null` pending final selection (recommended dated snapshot: `gpt-5.4-2026-03-05`). By default `validate_live` requires a `YYYY-MM-DD` date in the identifier.
+- `allow_undated_model_id`: `false` by default. Set `true` only if an undated model identifier (e.g., `gpt-6-astra` or `gpt-6.2-astra`) is explicitly approved; `score` still verifies whether `served_models` remained constant across all items.
+- `reasoning_effort`: `null` pending final confirmation (recommended: `"medium"`). When `null`, the parameter is omitted.
+- `max_output_tokens`: `null` pending confirmation (recommended: `16384` or `32768`, since `max_output_tokens` caps internal reasoning tokens plus visible output text in the `Responses` API).
+- `image_detail`: `"low"` to match upstream SPACE `gpt4o_qa` and `gpt4v_qa` configurations. Verify label legibility in `PTT_vision` and `JLO_vision` during the technical run.
+- `concurrency`: `3` concurrent independent requests sharing one `OpenAI` client instance. Run one process per `run_id`.
+- `timeout_seconds`: `180` seconds per HTTP request.
+- `max_retries`: `2` SDK retries for transient transport, HTTP 429, and HTTP 5xx errors using `OpenAI` idempotency keys. Set `0` to disable automatic SDK retries.
+- `upstream_commit`: `"eec58a24516bfcd4554807b0a2b9d08b04eafd1c"`, verified by exact SHA-256 match across all six inspected files in `apple-aiml-research/ml-space-benchmark`.
+- `upstream_implementation_checked`: `true` following offline parity verification across all 1,488 records and 5,240 image occurrences.
+- `model_settings_verified`: `false` until the live `technical` check confirms endpoint, token budget, and image legibility.
+- `failure_policy_approved`: `false` until retry settings are confirmed.
+- `status`: set to `"ready"` only after completing pre-run checks.
+- `protocol_version` / `parser_version`: `"review-3"` / `"space-primary-strict-secondary-v2"`.
 
-No temperature, top_p, seed, tools, previous_response_id, additional system instructions or explicit reasoning mode are sent. Omitted settings use service defaults; do not describe them as experimentally set to zero. store=false is requested but is not a claim about zero provider retention. Exact code/config, Python/OS/dependency versions and input hashes are recorded per run.
-
-The model request whitelist does not forward the entire config, source record, answer key or metadata to the API. OPENAI_API_KEY is read only from the local environment, never from config.json.
+`temperature`, `top_p`, `seed`, `tools`, `previous_response_id`, and custom system prompts are omitted. `store=false` is sent on every request. `OPENAI_API_KEY` is read exclusively from the environment.

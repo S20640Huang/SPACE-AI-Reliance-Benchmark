@@ -221,3 +221,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Benchmark local previews, raw API archives, and external datasets
+/data/
+/local/
+/runs/
+*.tmp
+

@@ -7,15 +7,17 @@
     "MPFB_vision"
   ],
   "model_snapshot": null,
+  "allow_undated_model_id": false,
   "reasoning_effort": null,
   "max_output_tokens": null,
   "image_detail": "low",
   "concurrency": 3,
   "timeout_seconds": 180,
-  "upstream_commit": null,
+  "max_retries": 2,
+  "upstream_commit": "eec58a24516bfcd4554807b0a2b9d08b04eafd1c",
   "upstream_implementation_checked": true,
   "model_settings_verified": false,
-  "protocol_version": "review-2",
+  "protocol_version": "review-3",
   "parser_version": "space-primary-strict-secondary-v2",
   "failure_policy_approved": false
 }
