@@ -1,5 +1,5 @@
 {
-  "status": "review_pending_model_and_parameters",
+  "status": "ready",
   "categories": [
     "MRT_vision",
     "PTT_vision",
@@ -16,8 +16,8 @@
   "max_retries": 2,
   "upstream_commit": "eec58a24516bfcd4554807b0a2b9d08b04eafd1c",
   "upstream_implementation_checked": true,
-  "model_settings_verified": false,
+  "model_settings_verified": true,
   "protocol_version": "review-3",
   "parser_version": "space-primary-strict-secondary-v2",
-  "failure_policy_approved": false
+  "failure_policy_approved": true
 }
