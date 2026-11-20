@@ -6,10 +6,10 @@
     "JLO_vision",
     "MPFB_vision"
   ],
-  "model_snapshot": null,
+  "model_snapshot": "gpt-5.4-2026-03-05",
   "allow_undated_model_id": false,
-  "reasoning_effort": null,
-  "max_output_tokens": null,
+  "reasoning_effort": "medium",
+  "max_output_tokens": 16384,
   "image_detail": "low",
   "concurrency": 3,
   "timeout_seconds": 180,

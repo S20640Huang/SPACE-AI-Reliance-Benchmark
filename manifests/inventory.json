@@ -23,5 +23,27 @@
   ],
   "total_records": 1488,
   "exact_duplicate_records": 0,
-  "note": "All source records retained. Hash checks do not identify option permutations or all shared-layout families."
+  "category_grouping": {
+    "MRT_vision": {
+      "records": 688,
+      "unique_layout_families": 98,
+      "unique_option_groups": 172
+    },
+    "PTT_vision": {
+      "records": 400,
+      "unique_layout_families": 20,
+      "unique_option_groups": 100
+    },
+    "JLO_vision": {
+      "records": 200,
+      "unique_layout_families": 50,
+      "unique_option_groups": 196
+    },
+    "MPFB_vision": {
+      "records": 200,
+      "unique_layout_families": 50,
+      "unique_option_groups": 50
+    }
+  },
+  "note": "All source records retained for full-pool pass. Use option_group_sha256 and layout_family_sha256 to deduplicate variants before pilot and learning/retention splits."
 }
