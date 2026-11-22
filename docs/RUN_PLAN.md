@@ -13,3 +13,15 @@
 ## Full-run readiness update (2026-11-20)
 
 Technical-001 completed all 8 requests with valid answers and the expected model snapshot. Its maximum output usage was 8,620 tokens (8,605 reasoning), triggering the prespecified increase from 16,384 to 32,768 before full-001. All technical preview images were verified readable. Preserve technical-001 unchanged and use 32,768 for full-001 and candidate stability repeats.
+
+## Transport recovery amendment (2026-11-22)
+
+After repeated technical retries, four recorded APITimeoutError failures remained: candidates-r4 MPFB_vision-00124, MPFB_vision-00165 and MPFB_vision-00177; candidates-r5 MPFB_vision-00177. No response correctness was available for these failed attempts. One recovery pass uses a 600-second SDK timeout and sequential requests, retaining the SDK retry count of 2. The timeout is a client transport setting, not a model reasoning-token budget or a guarantee of total elapsed duration. Timed-out server work may still incur charges.
+
+Use recover_timeouts.py, which defaults to an offline dry run. It verifies original runner code, config, source files, candidate IDs and request hashes. It only selects existing APITimeoutError records, preserves every HTTP 200 response, archives old raw responses and requests, and leaves the original metadata unchanged. Separate timestamped recovery journals record the amended transport settings, original and recovery commits, request outcome and file hashes. Do not change config.json or edit historical metadata to bypass resume checks. Do not run recovery concurrently with the original runner. Commit and publish this amendment before using --execute. If failures persist after this pass, inspect them before another recovery pass; do not substitute easier questions or retry completed answers.
+
+Offline check:
+`uv run --python 3.15 python recover_timeouts.py --data-root /path/to/SPACE_data_release`
+
+Paid recovery (after all original runs have stopped):
+`uv run --python 3.15 python recover_timeouts.py --data-root /path/to/SPACE_data_release --execute`
