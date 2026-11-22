@@ -98,7 +98,13 @@ def select_pilot_candidates(
         if not srow or srow.get('status') != 'valid':
             continue
         imgs = [x for x in mrow['image_sha256'].split(';') if x]
-        group_key = mrow.get('option_group_sha256') or computed_groups.get(item_id)
+        if cat == 'JLO_vision':
+            group_key = mrow.get('layout_family_sha256')
+            if not group_key:
+                raise ValueError(f'JLO item {item_id} requires layout_family_sha256; rerun audit.')
+        else:
+            # PTT groups represent distinct perspective questions, not entire scenes.
+            group_key = mrow.get('option_group_sha256') or computed_groups.get(item_id)
         if not group_key:
             if len(imgs) <= 1:
                 raise ValueError(
@@ -131,6 +137,7 @@ def select_pilot_candidates(
         picked = sorted([r['item_id'] for r in (correct[:take_c] + incorrect[:take_i])])
         selected_ids.extend(picked)
         summary['categories'][cat] = {
+            'grouping_field': 'layout_family_sha256' if cat == 'JLO_vision' else 'option_group_sha256',
             'unique_valid_groups': len(representatives),
             'available_correct_groups': len(correct),
             'available_incorrect_groups': len(incorrect),

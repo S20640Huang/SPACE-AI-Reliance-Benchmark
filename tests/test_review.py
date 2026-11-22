@@ -141,11 +141,11 @@ class ReviewTests(unittest.TestCase):
             base = Path(tmp)
             items_csv = base / 'items.csv'
             with items_csv.open('w', encoding='utf-8', newline='') as f:
-                w = csv.DictWriter(f, fieldnames=['item_id', 'category', 'image_sha256', 'option_group_sha256'])
+                w = csv.DictWriter(f, fieldnames=['item_id', 'category', 'image_sha256', 'option_group_sha256', 'layout_family_sha256'])
                 w.writeheader()
-                # Two 2-variant permutation groups in JLO_vision: group A (correct) and group B (incorrect)
+                # Two JLO layouts, each with distinct option sets: deduplicate by layout.
                 for i, grp in enumerate(['grpA', 'grpA', 'grpB', 'grpB']):
-                    w.writerow({'item_id': f'JLO_vision-{i:05d}', 'category': 'JLO_vision', 'image_sha256': 'i1;i2', 'option_group_sha256': grp})
+                    w.writerow({'item_id': f'JLO_vision-{i:05d}', 'category': 'JLO_vision', 'image_sha256': 'i1;i2', 'option_group_sha256': f'distinct-options-{i}', 'layout_family_sha256': grp})
 
             runs_dir = base / 'runs'
             sci_cfg = {'categories': ['JLO_vision'], 'model_snapshot': 'gpt-5.4-2026-03-05', 'reasoning_effort': 'medium', 'max_output_tokens': 16384, 'image_detail': 'low'}
