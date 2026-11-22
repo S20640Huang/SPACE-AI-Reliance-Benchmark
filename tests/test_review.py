@@ -178,6 +178,70 @@ class ReviewTests(unittest.TestCase):
             self.assertEqual(stab['total_candidates'], 2)
             self.assertEqual(stab['total_stable'], 1)
 
+    def test_ptt_minority_promotion_scene_balance_and_mrt_layout_dedup(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            items_csv = base / 'items.csv'
+            scores_csv = base / 'scores.csv'
+            with items_csv.open('w', encoding='utf-8', newline='') as mf, scores_csv.open('w', encoding='utf-8', newline='') as sf:
+                mw = csv.DictWriter(mf, fieldnames=['item_id', 'category', 'image_sha256', 'option_group_sha256', 'layout_family_sha256'])
+                sw = csv.DictWriter(sf, fieldnames=['item_id', 'category', 'parsed_answer', 'gold_answer', 'status', 'strict_correct'])
+                mw.writeheader()
+                sw.writeheader()
+                # Simulate PTT: 20 scenes x 5 questions x 4 variants = 400 rows; 9 questions have 1/4 wrong, 3/4 right.
+                idx = 0
+                for scene in range(20):
+                    for q in range(5):
+                        q_idx = scene * 5 + q
+                        for v in range(4):
+                            item_id = f'PTT_vision-{idx:05d}'
+                            idx += 1
+                            mw.writerow({
+                                'item_id': item_id,
+                                'category': 'PTT_vision',
+                                'image_sha256': f'scene-{scene:02d}',
+                                'option_group_sha256': f'ptt-q-{q_idx:03d}',
+                                'layout_family_sha256': f'scene-{scene:02d}',
+                            })
+                            is_wrong = q_idx < 9 and v == 0
+                            sw.writerow({
+                                'item_id': item_id,
+                                'category': 'PTT_vision',
+                                'parsed_answer': 1 if is_wrong else 2,
+                                'gold_answer': 2,
+                                'status': 'valid',
+                                'strict_correct': 0 if is_wrong else 1,
+                            })
+                # Simulate MRT: 2 option groups sharing 1 layout_family_sha256 -> only 1 candidate allowed.
+                for m in range(2):
+                    item_id = f'MRT_vision-{m:05d}'
+                    mw.writerow({
+                        'item_id': item_id,
+                        'category': 'MRT_vision',
+                        'image_sha256': f'shared-shape;opt-{m}-1;opt-{m}-2;opt-{m}-3;opt-{m}-4',
+                        'option_group_sha256': f'mrt-opt-grp-{m}',
+                        'layout_family_sha256': 'shared-shape',
+                    })
+                    sw.writerow({
+                        'item_id': item_id,
+                        'category': 'MRT_vision',
+                        'parsed_answer': 2,
+                        'gold_answer': 2,
+                        'status': 'valid',
+                        'strict_correct': 1,
+                    })
+
+            out_path = base / 'cands.json'
+            res = select_pilot_candidates(scores_csv, items_csv, per_category=40, seed=20261122, out_path=out_path)
+            ptt = res['categories']['PTT_vision']
+            self.assertEqual(ptt['selected_total'], 40)
+            self.assertEqual(ptt['selected_incorrect'], 9)
+            self.assertEqual(ptt['selected_correct'], 31)
+            self.assertEqual(ptt['unique_layouts_selected'], 20)
+            mrt = res['categories']['MRT_vision']
+            self.assertEqual(mrt['selected_total'], 1)
+            self.assertEqual(mrt['grouping_field'], 'layout_family_sha256')
+
 
 if __name__ == '__main__':
     unittest.main()

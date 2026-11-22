@@ -63,6 +63,35 @@ def _write_json(path: Path, value) -> None:
     tmp.replace(path)
 
 
+def _pick_balanced_by_layout(
+    items: list[dict],
+    k: int,
+    rng: random.Random,
+    layout_counts: dict[str, int],
+) -> list[dict]:
+    buckets: dict[str, list[dict]] = {}
+    for item in items:
+        lk = item.get('_layout') or item['item_id']
+        buckets.setdefault(lk, []).append(item)
+    for lk in sorted(buckets):
+        buckets[lk].sort(key=lambda x: x['item_id'])
+        rng.shuffle(buckets[lk])
+    picked = []
+    while len(picked) < k and buckets:
+        min_used = min(layout_counts.get(lk, 0) for lk in buckets)
+        eligible = sorted(lk for lk in buckets if layout_counts.get(lk, 0) == min_used)
+        rng.shuffle(eligible)
+        for lk in eligible:
+            if len(picked) >= k:
+                break
+            chosen = buckets[lk].pop(0)
+            picked.append(chosen)
+            layout_counts[lk] = layout_counts.get(lk, 0) + 1
+            if not buckets[lk]:
+                del buckets[lk]
+    return picked
+
+
 def select_pilot_candidates(
     scores_csv: Path,
     items_csv: Path,
@@ -74,7 +103,7 @@ def select_pilot_candidates(
     if per_category <= 0:
         raise ValueError('per_category must be positive')
     with Path(scores_csv).open(encoding='utf-8', newline='') as f:
-        score_rows = {r['item_id']: r for r in csv.DictReader(f)}
+        score_rows = {r['item_id']: dict(r) for r in csv.DictReader(f)}
     with Path(items_csv).open(encoding='utf-8', newline='') as f:
         manifest_rows = list(csv.DictReader(f))
 
@@ -98,19 +127,19 @@ def select_pilot_candidates(
         if not srow or srow.get('status') != 'valid':
             continue
         imgs = [x for x in mrow['image_sha256'].split(';') if x]
-        if cat == 'JLO_vision':
-            group_key = mrow.get('layout_family_sha256')
+        layout_key = mrow.get('layout_family_sha256') or (imgs[0] if imgs else '')
+        srow['_layout'] = layout_key
+        if cat != 'PTT_vision':
+            group_key = layout_key
             if not group_key:
-                raise ValueError(f'JLO item {item_id} requires layout_family_sha256; rerun audit.')
+                raise ValueError(f'Item {item_id} requires layout_family_sha256 or image_sha256; rerun audit.')
         else:
-            # PTT groups represent distinct perspective questions, not entire scenes.
+            # PTT groups represent distinct perspective questions across the 20 shared scenes.
             group_key = mrow.get('option_group_sha256') or computed_groups.get(item_id)
-        if not group_key:
-            if len(imgs) <= 1:
+            if not group_key:
                 raise ValueError(
                     f'Item {item_id} requires option_group_sha256 in items.csv or --data-root to deduplicate text options.'
                 )
-            group_key = _digest_json(sorted(set(imgs)))
         by_cat_group.setdefault(cat, {}).setdefault(group_key, []).append(srow)
 
     rng = random.Random(seed)
@@ -118,32 +147,68 @@ def select_pilot_candidates(
     summary = {'seed': seed, 'per_category_target': per_category, 'categories': {}}
     for cat in sorted(by_cat_group):
         groups = by_cat_group[cat]
-        representatives = []
+        rep_by_group = {}
         for group_key in sorted(groups):
             members = sorted(groups[group_key], key=lambda x: x['item_id'])
-            representatives.append(rng.choice(members))
-        correct = sorted([r for r in representatives if int(r['strict_correct']) == 1], key=lambda x: x['item_id'])
-        incorrect = sorted([r for r in representatives if int(r['strict_correct']) == 0], key=lambda x: x['item_id'])
-        rng.shuffle(correct)
-        rng.shuffle(incorrect)
+            rep_by_group[group_key] = rng.choice(members)
+
         half = per_category // 2
         other = per_category - half
+        promoted = 0
+        inc_count = sum(int(r['strict_correct']) == 0 for r in rep_by_group.values())
+        cor_count = sum(int(r['strict_correct']) == 1 for r in rep_by_group.values())
+        if inc_count < other:
+            mixed = sorted(
+                gk for gk, rep in rep_by_group.items()
+                if int(rep['strict_correct']) == 1 and any(int(m['strict_correct']) == 0 for m in groups[gk])
+            )
+            rng.shuffle(mixed)
+            for gk in mixed[: other - inc_count]:
+                inc_members = sorted([m for m in groups[gk] if int(m['strict_correct']) == 0], key=lambda x: x['item_id'])
+                rep_by_group[gk] = rng.choice(inc_members)
+                promoted += 1
+        elif cor_count < half:
+            mixed = sorted(
+                gk for gk, rep in rep_by_group.items()
+                if int(rep['strict_correct']) == 0 and any(int(m['strict_correct']) == 1 for m in groups[gk])
+            )
+            rng.shuffle(mixed)
+            for gk in mixed[: half - cor_count]:
+                cor_members = sorted([m for m in groups[gk] if int(m['strict_correct']) == 1], key=lambda x: x['item_id'])
+                rep_by_group[gk] = rng.choice(cor_members)
+                promoted += 1
+
+        representatives = list(rep_by_group.values())
+        correct = sorted([r for r in representatives if int(r['strict_correct']) == 1], key=lambda x: x['item_id'])
+        incorrect = sorted([r for r in representatives if int(r['strict_correct']) == 0], key=lambda x: x['item_id'])
         take_c = min(len(correct), half)
         take_i = min(len(incorrect), other)
         if take_c < half:
             take_i = min(len(incorrect), per_category - take_c)
         elif take_i < other:
             take_c = min(len(correct), per_category - take_i)
-        picked = sorted([r['item_id'] for r in (correct[:take_c] + incorrect[:take_i])])
+
+        layout_counts: dict[str, int] = {}
+        if take_i <= take_c:
+            picked_i = _pick_balanced_by_layout(incorrect, take_i, rng, layout_counts)
+            picked_c = _pick_balanced_by_layout(correct, take_c, rng, layout_counts)
+        else:
+            picked_c = _pick_balanced_by_layout(correct, take_c, rng, layout_counts)
+            picked_i = _pick_balanced_by_layout(incorrect, take_i, rng, layout_counts)
+
+        picked_rows = picked_c + picked_i
+        picked = sorted(r['item_id'] for r in picked_rows)
         selected_ids.extend(picked)
         summary['categories'][cat] = {
-            'grouping_field': 'layout_family_sha256' if cat == 'JLO_vision' else 'option_group_sha256',
+            'grouping_field': 'option_group_sha256' if cat == 'PTT_vision' else 'layout_family_sha256',
             'unique_valid_groups': len(representatives),
             'available_correct_groups': len(correct),
             'available_incorrect_groups': len(incorrect),
+            'promoted_minority_groups': promoted,
             'selected_total': len(picked),
-            'selected_correct': take_c,
-            'selected_incorrect': take_i,
+            'selected_correct': len(picked_c),
+            'selected_incorrect': len(picked_i),
+            'unique_layouts_selected': len({r['_layout'] for r in picked_rows if r['_layout']}),
         }
 
     selected_ids.sort()
