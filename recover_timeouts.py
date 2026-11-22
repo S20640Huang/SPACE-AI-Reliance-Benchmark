@@ -15,6 +15,18 @@ import subprocess
 import benchmark as b
 
 
+def recoverable_failure(record: dict) -> bool:
+    if record.get('http_status') is None:
+        return record.get('transport_error') in ('APITimeoutError', 'APIConnectionError')
+    if record.get('http_status') == 429:
+        try:
+            error = json.loads(record.get('response_text', '{}')).get('error', {})
+            return error.get('code') == 'credit_balance_exhausted'
+        except (ValueError, AttributeError, TypeError):
+            return False
+    return False
+
+
 def recovery_record(out: Path, item_id: str) -> dict:
     """Use prior timeout provenance only for an explicitly journalled interruption."""
     raw = out / 'raw' / f'{item_id}.json'
@@ -32,8 +44,7 @@ def recovery_record(out: Path, item_id: str) -> dict:
             if any(x.get('item_id') == item_id for x in journal.get('results', [])):
                 raise ValueError(f'{item_id}: journal reports a result but raw record is missing.')
             record = b.read_json(backup)
-            if (record.get('http_status') is None
-                    and record.get('transport_error') == 'APITimeoutError'
+            if (recoverable_failure(record)
                     and record.get('request_sha256') == request_hash
                     and b.digest(b.canonical(b.read_json(saved_request))) == request_hash):
                 return record
@@ -46,7 +57,7 @@ def select_timeouts(out: Path, ids: list[str]) -> list[str]:
         record = recovery_record(out, item_id)
         if record.get('http_status') == 200:
             continue  # Never retry completed, incomplete or invalid HTTP 200 responses.
-        if record.get('http_status') is None and record.get('transport_error') == 'APITimeoutError':
+        if recoverable_failure(record):
             selected.append(item_id)
         else:
             raise ValueError(f'{item_id}: unexpected failure type; inspect before recovery.')
@@ -136,7 +147,7 @@ def main():
             stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
             folder = out / 'recovery' / stamp
             folder.mkdir(parents=True)
-            journal = {'reason': 'Repeated APITimeoutError; transport-only recovery',
+            journal = {'reason': 'Transport failure or exhausted credits after replenishment; settings unchanged',
                        'original_git_commit': job['meta']['git_commit'], 'recovery_git_commit': commit,
                        'recovery_script_sha256': b.digest(Path(__file__).read_bytes()),
                        'original_metadata_sha256': meta_hash,

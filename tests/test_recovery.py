@@ -54,3 +54,19 @@ class RecoveryTests(unittest.TestCase):
             b.write_json(out / 'requests/x.json', {'input': ['changed']})
             with self.assertRaises(ValueError):
                 select_timeouts(out, ['x'])
+
+    def test_connection_and_confirmed_credit_errors_can_resume(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            b.write_json(out / 'raw/connection.json', {
+                'http_status': None, 'transport_error': 'APIConnectionError'})
+            b.write_json(out / 'raw/credits.json', {
+                'http_status': 429,
+                'response_text': '{"error": {"code": "credit_balance_exhausted"}}'})
+            self.assertEqual(select_timeouts(out, ['connection', 'credits']),
+                             ['connection', 'credits'])
+            b.write_json(out / 'raw/other.json', {
+                'http_status': 429,
+                'response_text': '{"error": {"code": "unknown_error"}}'})
+            with self.assertRaises(ValueError):
+                select_timeouts(out, ['other'])

@@ -32,3 +32,9 @@ completed result for that item. Payload hashes must agree. This is recorded as a
 interruption, not a newly observed timeout; the pending request is archived by the
 original runner before resubmission. No HTTP 200 response is replaced. A request
 interrupted locally may already have incurred server-side charges.
+
+After the user confirmed credit replenishment, recovery eligibility was extended
+to saved APIConnectionError records and HTTP 429 responses whose error code is
+exactly credit_balance_exhausted. Other unrecognised errors remain blocked.
+The same payload checks, archived attempts, original metadata and HTTP 200
+exclusions apply; model and generation settings are unchanged.
