@@ -25,3 +25,10 @@ Offline check:
 
 Paid recovery (after all original runs have stopped):
 `uv run --python 3.15 python recover_timeouts.py --data-root /path/to/SPACE_data_release --execute`
+
+Interrupted recovery may resume when a missing raw response has a matching saved
+request and a prior recovery journal with a backed-up timeout record and no
+completed result for that item. Payload hashes must agree. This is recorded as an
+interruption, not a newly observed timeout; the pending request is archived by the
+original runner before resubmission. No HTTP 200 response is replaced. A request
+interrupted locally may already have incurred server-side charges.

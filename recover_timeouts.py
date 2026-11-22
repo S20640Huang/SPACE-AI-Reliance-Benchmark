@@ -15,13 +15,35 @@ import subprocess
 import benchmark as b
 
 
+def recovery_record(out: Path, item_id: str) -> dict:
+    """Use prior timeout provenance only for an explicitly journalled interruption."""
+    raw = out / 'raw' / f'{item_id}.json'
+    if raw.exists():
+        return b.read_json(raw)
+    request = out / 'requests' / f'{item_id}.json'
+    if request.exists():
+        request_hash = b.digest(b.canonical(b.read_json(request)))
+        for journal_path in sorted((out / 'recovery').glob('*/recovery.json'), reverse=True):
+            journal = b.read_json(journal_path)
+            backup = journal_path.parent / 'raw' / f'{item_id}.json'
+            saved_request = journal_path.parent / 'requests' / f'{item_id}.json'
+            if item_id not in journal.get('items', []) or not backup.exists() or not saved_request.exists():
+                continue
+            if any(x.get('item_id') == item_id for x in journal.get('results', [])):
+                raise ValueError(f'{item_id}: journal reports a result but raw record is missing.')
+            record = b.read_json(backup)
+            if (record.get('http_status') is None
+                    and record.get('transport_error') == 'APITimeoutError'
+                    and record.get('request_sha256') == request_hash
+                    and b.digest(b.canonical(b.read_json(saved_request))) == request_hash):
+                return record
+    raise ValueError(f'{item_id}: missing record without verified interrupted-recovery provenance.')
+
+
 def select_timeouts(out: Path, ids: list[str]) -> list[str]:
     selected = []
     for item_id in ids:
-        path = out / 'raw' / f'{item_id}.json'
-        if not path.exists():
-            raise ValueError(f'{item_id}: missing record; this recovery handles recorded timeouts only.')
-        record = b.read_json(path)
+        record = recovery_record(out, item_id)
         if record.get('http_status') == 200:
             continue  # Never retry completed, incomplete or invalid HTTP 200 responses.
         if record.get('http_status') is None and record.get('transport_error') == 'APITimeoutError':
@@ -35,7 +57,7 @@ def verify_body(item: dict, root: Path, cfg: dict, out: Path) -> str:
     item_id = item['item_id']
     body_hash = b.digest(b.canonical(b.build_body(item['question'], root, cfg)))
     saved_hash = b.digest(b.canonical(b.read_json(out / 'requests' / f'{item_id}.json')))
-    if body_hash != saved_hash or body_hash != b.read_json(out / 'raw' / f'{item_id}.json')['request_sha256']:
+    if body_hash != saved_hash or body_hash != recovery_record(out, item_id)['request_sha256']:
         raise ValueError(f'{item_id}: request changed; refusing recovery.')
     return body_hash
 
@@ -131,7 +153,12 @@ def main():
                     if not select_timeouts(out, [item_id]):
                         continue
                     verify_body(item, args.data_root, job['cfg'], out)
+                    if not (out / 'raw' / f'{item_id}.json').exists():
+                        journal.setdefault('interrupted_items', []).append(item_id)
+                        b.write_json(folder / 'recovery.json', journal)
                     for sub in ('raw', 'requests'):
+                        if not (out / sub / f'{item_id}.json').exists():
+                            continue
                         dst = folder / sub / f'{item_id}.json'
                         dst.parent.mkdir(exist_ok=True)
                         shutil.copy2(out / sub / f'{item_id}.json', dst)

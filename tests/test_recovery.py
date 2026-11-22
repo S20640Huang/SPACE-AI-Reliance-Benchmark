@@ -37,3 +37,20 @@ class RecoveryTests(unittest.TestCase):
                 b.write_json(out / 'requests/x.json', {'input': ['changed question']})
                 with self.assertRaises(ValueError):
                     verify_body({'item_id': 'x', 'question': []}, out, {}, out)
+
+    def test_interrupted_recovery_requires_matching_journal_and_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            body = {'input': ['original question']}
+            sha = b.digest(b.canonical(body))
+            folder = out / 'recovery/prior'
+            b.write_json(folder / 'recovery.json', {'items': ['x'], 'results': []})
+            b.write_json(folder / 'raw/x.json', {
+                'http_status': None, 'transport_error': 'APITimeoutError',
+                'request_sha256': sha})
+            b.write_json(folder / 'requests/x.json', body)
+            b.write_json(out / 'requests/x.json', body)
+            self.assertEqual(select_timeouts(out, ['x']), ['x'])
+            b.write_json(out / 'requests/x.json', {'input': ['changed']})
+            with self.assertRaises(ValueError):
+                select_timeouts(out, ['x'])
