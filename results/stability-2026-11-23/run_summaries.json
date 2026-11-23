@@ -1,0 +1,472 @@
+{
+  "full-001": {
+    "MRT_vision": {
+      "n_expected": 688,
+      "n_http200_finished": 688,
+      "n_completed": 688,
+      "n_incomplete": 0,
+      "n_valid": 688,
+      "n_correct": 189,
+      "upstream_accuracy_full_pool": 0.2747093023255814,
+      "upstream_accuracy_completed_only_gate": 0.2747093023255814,
+      "upstream_correct_over_expected_lower_bound": 0.2747093023255814,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.2747093023255814,
+      "correct_over_all_expected": 0.2747093023255814,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 12316,
+      "max_reasoning_tokens_observed": 12301,
+      "status_counts": {
+        "valid": 688
+      }
+    },
+    "PTT_vision": {
+      "n_expected": 400,
+      "n_http200_finished": 400,
+      "n_completed": 400,
+      "n_incomplete": 0,
+      "n_valid": 400,
+      "n_correct": 385,
+      "upstream_accuracy_full_pool": 0.9625,
+      "upstream_accuracy_completed_only_gate": 0.9625,
+      "upstream_correct_over_expected_lower_bound": 0.9625,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.9625,
+      "correct_over_all_expected": 0.9625,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 2817,
+      "max_reasoning_tokens_observed": 2802,
+      "status_counts": {
+        "valid": 400
+      }
+    },
+    "JLO_vision": {
+      "n_expected": 200,
+      "n_http200_finished": 200,
+      "n_completed": 200,
+      "n_incomplete": 0,
+      "n_valid": 200,
+      "n_correct": 165,
+      "upstream_accuracy_full_pool": 0.825,
+      "upstream_accuracy_completed_only_gate": 0.825,
+      "upstream_correct_over_expected_lower_bound": 0.825,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.825,
+      "correct_over_all_expected": 0.825,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 2928,
+      "max_reasoning_tokens_observed": 2913,
+      "status_counts": {
+        "valid": 200
+      }
+    },
+    "MPFB_vision": {
+      "n_expected": 200,
+      "n_http200_finished": 200,
+      "n_completed": 200,
+      "n_incomplete": 0,
+      "n_valid": 200,
+      "n_correct": 90,
+      "upstream_accuracy_full_pool": 0.45,
+      "upstream_accuracy_completed_only_gate": 0.45,
+      "upstream_correct_over_expected_lower_bound": 0.45,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.45,
+      "correct_over_all_expected": 0.45,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 13124,
+      "max_reasoning_tokens_observed": 13109,
+      "status_counts": {
+        "valid": 200
+      }
+    }
+  },
+  "candidates-r2": {
+    "MRT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 17,
+      "upstream_accuracy_full_pool": 0.425,
+      "upstream_accuracy_completed_only_gate": 0.425,
+      "upstream_correct_over_expected_lower_bound": 0.425,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.425,
+      "correct_over_all_expected": 0.425,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 11213,
+      "max_reasoning_tokens_observed": 11198,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "PTT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 37,
+      "upstream_accuracy_full_pool": 0.925,
+      "upstream_accuracy_completed_only_gate": 0.925,
+      "upstream_correct_over_expected_lower_bound": 0.925,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.925,
+      "correct_over_all_expected": 0.925,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 2777,
+      "max_reasoning_tokens_observed": 2762,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "JLO_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 23,
+      "upstream_accuracy_full_pool": 0.575,
+      "upstream_accuracy_completed_only_gate": 0.575,
+      "upstream_correct_over_expected_lower_bound": 0.575,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.575,
+      "correct_over_all_expected": 0.575,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 2005,
+      "max_reasoning_tokens_observed": 1990,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "MPFB_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 25,
+      "upstream_accuracy_full_pool": 0.625,
+      "upstream_accuracy_completed_only_gate": 0.625,
+      "upstream_correct_over_expected_lower_bound": 0.625,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.625,
+      "correct_over_all_expected": 0.625,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 13143,
+      "max_reasoning_tokens_observed": 13128,
+      "status_counts": {
+        "valid": 40
+      }
+    }
+  },
+  "candidates-r3": {
+    "MRT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 17,
+      "upstream_accuracy_full_pool": 0.425,
+      "upstream_accuracy_completed_only_gate": 0.425,
+      "upstream_correct_over_expected_lower_bound": 0.425,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.425,
+      "correct_over_all_expected": 0.425,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 10206,
+      "max_reasoning_tokens_observed": 10191,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "PTT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 38,
+      "upstream_accuracy_full_pool": 0.95,
+      "upstream_accuracy_completed_only_gate": 0.95,
+      "upstream_correct_over_expected_lower_bound": 0.95,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.95,
+      "correct_over_all_expected": 0.95,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 3100,
+      "max_reasoning_tokens_observed": 3085,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "JLO_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 24,
+      "upstream_accuracy_full_pool": 0.6,
+      "upstream_accuracy_completed_only_gate": 0.6,
+      "upstream_correct_over_expected_lower_bound": 0.6,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.6,
+      "correct_over_all_expected": 0.6,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 3628,
+      "max_reasoning_tokens_observed": 3609,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "MPFB_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 20,
+      "upstream_accuracy_full_pool": 0.5,
+      "upstream_accuracy_completed_only_gate": 0.5,
+      "upstream_correct_over_expected_lower_bound": 0.5,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.5,
+      "correct_over_all_expected": 0.5,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 11885,
+      "max_reasoning_tokens_observed": 11870,
+      "status_counts": {
+        "valid": 40
+      }
+    }
+  },
+  "candidates-r4": {
+    "MRT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 13,
+      "upstream_accuracy_full_pool": 0.325,
+      "upstream_accuracy_completed_only_gate": 0.325,
+      "upstream_correct_over_expected_lower_bound": 0.325,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.325,
+      "correct_over_all_expected": 0.325,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 9654,
+      "max_reasoning_tokens_observed": 9639,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "PTT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 38,
+      "upstream_accuracy_full_pool": 0.95,
+      "upstream_accuracy_completed_only_gate": 0.95,
+      "upstream_correct_over_expected_lower_bound": 0.95,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.95,
+      "correct_over_all_expected": 0.95,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 2299,
+      "max_reasoning_tokens_observed": 2284,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "JLO_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 26,
+      "upstream_accuracy_full_pool": 0.65,
+      "upstream_accuracy_completed_only_gate": 0.65,
+      "upstream_correct_over_expected_lower_bound": 0.65,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.65,
+      "correct_over_all_expected": 0.65,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 3013,
+      "max_reasoning_tokens_observed": 2998,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "MPFB_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 17,
+      "upstream_accuracy_full_pool": 0.425,
+      "upstream_accuracy_completed_only_gate": 0.425,
+      "upstream_correct_over_expected_lower_bound": 0.425,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.425,
+      "correct_over_all_expected": 0.425,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 12207,
+      "max_reasoning_tokens_observed": 12192,
+      "status_counts": {
+        "valid": 40
+      }
+    }
+  },
+  "candidates-r5": {
+    "MRT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 19,
+      "upstream_accuracy_full_pool": 0.475,
+      "upstream_accuracy_completed_only_gate": 0.475,
+      "upstream_correct_over_expected_lower_bound": 0.475,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.475,
+      "correct_over_all_expected": 0.475,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 11918,
+      "max_reasoning_tokens_observed": 11903,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "PTT_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 36,
+      "upstream_accuracy_full_pool": 0.9,
+      "upstream_accuracy_completed_only_gate": 0.9,
+      "upstream_correct_over_expected_lower_bound": 0.9,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.9,
+      "correct_over_all_expected": 0.9,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 1904,
+      "max_reasoning_tokens_observed": 1889,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "JLO_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 25,
+      "upstream_accuracy_full_pool": 0.625,
+      "upstream_accuracy_completed_only_gate": 0.625,
+      "upstream_correct_over_expected_lower_bound": 0.625,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.625,
+      "correct_over_all_expected": 0.625,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 2289,
+      "max_reasoning_tokens_observed": 2274,
+      "status_counts": {
+        "valid": 40
+      }
+    },
+    "MPFB_vision": {
+      "n_expected": 40,
+      "n_http200_finished": 40,
+      "n_completed": 40,
+      "n_incomplete": 0,
+      "n_valid": 40,
+      "n_correct": 17,
+      "upstream_accuracy_full_pool": 0.425,
+      "upstream_accuracy_completed_only_gate": 0.425,
+      "upstream_correct_over_expected_lower_bound": 0.425,
+      "upstream_full_pool_reportable": true,
+      "accuracy_valid_only": 0.425,
+      "correct_over_all_expected": 0.425,
+      "served_models": [
+        "gpt-5.4-2026-03-05"
+      ],
+      "single_served_model": true,
+      "max_output_tokens_observed": 13427,
+      "max_reasoning_tokens_observed": 13412,
+      "status_counts": {
+        "valid": 40
+      }
+    }
+  }
+}
