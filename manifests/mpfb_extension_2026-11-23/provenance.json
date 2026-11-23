@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-23",
+  "base_run": "full-001",
+  "seed": 20261119,
+  "source_sha256": {
+    "runs/full-001/scores.csv": "a230f6b3610a747be05bb0575bd56792c69de6843f8a5d71bd77f754778296a7",
+    "manifests/items.csv": "35a3065f83caafec562b98b53a4cd2ee94e8da9c141dcdf0939a7afb48839c48",
+    "config.json": "f421b4d357f576365407bddab93aa0f450b71ad2224524e960326ad5cf62412e",
+    "local/candidate_ids.json": "c2b65e6d977c03a7910aac5de0436484c51a9535480e933b274f0bd07b8b4a69",
+    "runs/stability_summary.json": "204195505ed7ab4be009fa3da4febb6835125ed385a3d47671474587634e3bb7"
+  },
+  "selected_items": [
+    {
+      "item_id": "MPFB_vision-00010",
+      "layout_family_sha256": "c3d6b4d4b316e523ae35f41a780855027cd297178e67eaa88a4b705e5f50ed96",
+      "first_run_correct": 1
+    },
+    {
+      "item_id": "MPFB_vision-00027",
+      "layout_family_sha256": "4f5b311b93673cd7abd15bab2c88012ad907eee2ab24f31e9467ddb165508db3",
+      "first_run_correct": 1
+    },
+    {
+      "item_id": "MPFB_vision-00036",
+      "layout_family_sha256": "aebb69202e23da5d9fc7e8e1197015cc1acf1e22af519bb73b6bd5907bcbe5d8",
+      "first_run_correct": 0
+    },
+    {
+      "item_id": "MPFB_vision-00050",
+      "layout_family_sha256": "21bcd42bd4edf530cc3919718b3e714ed7fc202f6ab480b93f54cb0d076d206f",
+      "first_run_correct": 0
+    },
+    {
+      "item_id": "MPFB_vision-00052",
+      "layout_family_sha256": "98817f43743bc6fdeb452325d9f42276b7cb9b57cc856ee088aac23f971353c4",
+      "first_run_correct": 1
+    },
+    {
+      "item_id": "MPFB_vision-00076",
+      "layout_family_sha256": "1edbdb00762630f8c97085d249d980f2bc22bda1826ba53f6ee4f2e86355c638",
+      "first_run_correct": 1
+    },
+    {
+      "item_id": "MPFB_vision-00083",
+      "layout_family_sha256": "055ca70b24686adc938c47d5be6b6e33ed4e534c7a594d115cc10d5e3bcd435c",
+      "first_run_correct": 0
+    },
+    {
+      "item_id": "MPFB_vision-00107",
+      "layout_family_sha256": "1ab090ae5da2a3407cc569aa226196f93bdc05a7d2e6a2e0371413b8a0785904",
+      "first_run_correct": 1
+    },
+    {
+      "item_id": "MPFB_vision-00120",
+      "layout_family_sha256": "5b18744daaa00a2fd9f1c1c990031014aa25cd229c11a4273c08542335f6536e",
+      "first_run_correct": 0
+    },
+    {
+      "item_id": "MPFB_vision-00135",
+      "layout_family_sha256": "4be952cf784fe8d09fa9d376ee21e555f26c9175d6c683a3a759a4ff5e698d23",
+      "first_run_correct": 0
+    }
+  ]
+}

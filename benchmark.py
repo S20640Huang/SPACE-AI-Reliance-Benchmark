@@ -469,11 +469,15 @@ def main() -> None:
     ap.add_argument('--repeat-number', type=int, default=1)
     ap.add_argument('--retry-technical-errors', action='store_true')
     ap.add_argument('--per-category', type=int, default=40)
+    ap.add_argument('--exclude-ids', type=Path, help='select-candidates: exclude IDs and their entire selection groups')
+    ap.add_argument('--categories', nargs='+', help='select-candidates: restrict task categories')
     ap.add_argument('--seed', type=int, default=20261119)
     ap.add_argument('--repeat-run-ids', nargs='+')
     ap.add_argument('--min-agreement', type=int, default=4)
     ap.add_argument('--out', type=Path)
     args = ap.parse_args()
+    if args.command != 'select-candidates' and (args.exclude_ids is not None or args.categories is not None):
+        ap.error('--exclude-ids and --categories apply only to select-candidates')
     if not re.fullmatch(r'[a-zA-Z0-9_-]+', args.run_id):
         ap.error('run-id must contain only letters, numbers, underscores or hyphens')
     cfg = read_json(args.config)
@@ -494,6 +498,8 @@ def main() -> None:
             args.seed,
             out_path,
             data_root=args.data_root,
+            exclude_ids=args.exclude_ids,
+            categories=args.categories,
         )
         print(json.dumps(res))
     elif args.command == 'check-stability':

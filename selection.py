@@ -99,6 +99,8 @@ def select_pilot_candidates(
     seed: int,
     out_path: Path,
     data_root: Path | None = None,
+    exclude_ids: Path | None = None,
+    categories: list[str] | None = None,
 ) -> dict:
     if per_category <= 0:
         raise ValueError('per_category must be positive')
@@ -107,11 +109,24 @@ def select_pilot_candidates(
     with Path(items_csv).open(encoding='utf-8', newline='') as f:
         manifest_rows = list(csv.DictReader(f))
 
+    requested_categories = set(categories) if categories is not None else None
+    known_categories = {r['category'] for r in manifest_rows}
+    if requested_categories is not None and (not requested_categories or not requested_categories <= known_categories):
+        raise ValueError('Unknown or empty category selection')
+    excluded = set()
+    if exclude_ids is not None:
+        values = json.loads(Path(exclude_ids).read_text(encoding='utf-8'))
+        if not isinstance(values, list) or not all(isinstance(x, str) for x in values):
+            raise ValueError('exclude-ids must contain a JSON list of item IDs')
+        excluded = set(values)
+        if not excluded <= {r['item_id'] for r in manifest_rows}:
+            raise ValueError('Unknown IDs in exclusion list')
+
     computed_groups = {}
     if data_root is not None:
-        categories = sorted({r['category'] for r in manifest_rows})
+        pool_categories = sorted({r['category'] for r in manifest_rows})
         qas_by_id = {}
-        for cat in categories:
+        for cat in pool_categories:
             qas = json.loads((Path(data_root) / cat / 'qas.json').read_text(encoding='utf-8'))
             for i, rec in enumerate(qas):
                 qas_by_id[f'{cat}-{i:05d}'] = rec['question']
@@ -119,10 +134,26 @@ def select_pilot_candidates(
             imgs = [x for x in r['image_sha256'].split(';') if x]
             computed_groups[r['item_id']] = option_group_hash(qas_by_id[r['item_id']], imgs)
 
+    # Exclude entire selection units, not just the chosen option-order variant.
+    excluded_groups = set()
+    for r in manifest_rows:
+        if r['item_id'] not in excluded:
+            continue
+        cat = r['category']
+        imgs = [x for x in r['image_sha256'].split(';') if x]
+        key = ((r.get('option_group_sha256') or computed_groups.get(r['item_id']))
+               if cat == 'PTT_vision' else
+               (r.get('layout_family_sha256') or (imgs[0] if imgs else '')))
+        if not key:
+            raise ValueError('Excluded item has no grouping key; rerun audit.')
+        excluded_groups.add((cat, key))
+
     by_cat_group: dict[str, dict[str, list[dict]]] = {}
     for mrow in manifest_rows:
         item_id = mrow['item_id']
         cat = mrow['category']
+        if requested_categories is not None and cat not in requested_categories:
+            continue
         srow = score_rows.get(item_id)
         if not srow or srow.get('status') != 'valid':
             continue
@@ -140,7 +171,8 @@ def select_pilot_candidates(
                 raise ValueError(
                     f'Item {item_id} requires option_group_sha256 in items.csv or --data-root to deduplicate text options.'
                 )
-        by_cat_group.setdefault(cat, {}).setdefault(group_key, []).append(srow)
+        if (cat, group_key) not in excluded_groups:
+            by_cat_group.setdefault(cat, {}).setdefault(group_key, []).append(srow)
 
     rng = random.Random(seed)
     selected_ids = []

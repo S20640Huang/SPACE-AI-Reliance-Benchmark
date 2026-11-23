@@ -38,3 +38,52 @@ to saved APIConnectionError records and HTTP 429 responses whose error code is
 exactly credit_balance_exhausted. Other unrecognised errors remain blocked.
 The same payload checks, archived attempts, original metadata and HTTP 200
 exclusions apply; model and generation settings are unchanged.
+
+## Final MPFB candidate extension amendment (2026-11-23)
+
+Trigger: the original 160-candidate batch is complete, with 119 stable items,
+including 21 MPFB items from the original 40 selected MPFB layouts. Following
+Mark's instruction, include the remaining 10 MPFB layouts before independent
+human difficulty pilot data are collected. Gorilla interface/export self-tests
+are technical checks and are not selection evidence. This is the final candidate
+batch: no replacement or further expansion based on repeat outcomes or later
+human performance. The expectation of about five additional stable layouts is
+not a stopping rule. PTT and all other categories retain their existing pools.
+
+Use the existing picker with seed 20261119, restricted to MPFB_vision, target 10.
+Exclude all original 160 candidate IDs AND their selection groups; for MPFB this
+excludes all 40 originally selected layouts, including layouts whose candidates
+failed stability. Select exactly one item per remaining layout. Strata use valid
+first-run strict correctness from full-001. Initially choose a representative
+uniformly within each layout, then use the existing seeded mixed-layout promotion
+rule to aim for five correct and five incorrect representatives. If a stratum is
+unavailable, fill the shortfall from the other stratum and report it; do not reroll
+seeds. In this draw four representatives were promoted to the scarce stratum,
+resulting in exactly five correct and five incorrect items across ten layouts.
+
+Frozen IDs (also in manifests/mpfb_extension_2026-11-23/candidate_ids.json):
+- First-run correct: MPFB_vision-00010, MPFB_vision-00027,
+  MPFB_vision-00052, MPFB_vision-00076, MPFB_vision-00107.
+- First-run incorrect: MPFB_vision-00036, MPFB_vision-00050,
+  MPFB_vision-00083, MPFB_vision-00120, MPFB_vision-00135.
+
+The same folder contains the frozen original exclusion IDs, picker summary, and
+provenance with layout hashes and SHA-256 digests of input scores, manifest,
+configuration, original candidate list and original stability summary. Offline
+verification reproduced the original 160 IDs unchanged and confirmed the new
+layout set equals all 50 MPFB layouts minus the original 40.
+
+Commit this amendment, picker changes, tests and frozen IDs before any paid call.
+Keep config.json unchanged: gpt-5.4-2026-03-05, medium reasoning, 32768 output-token
+limit, low image detail. Use full-001 as run 1; run four additional repeats of the
+frozen ten IDs as mpfb-extension-r2 through mpfb-extension-r5 (40 planned requests,
+excluding technical retries). Preserve completed responses. Technical failures
+follow the documented retry/recovery policy, never answer-based reruns.
+
+Apply the original criterion: at least four of five valid correctness states must
+match the FIRST RUN's correctness state. Report exact-option agreement separately;
+participant advice remains the first-run answer. Report this extension separately
+in runs/mpfb_extension_stability_summary.json and its CSV companion. Preserve the
+original runs, candidate list and stability summary unchanged. Publish the separate
+extension summary when complete, even if fewer than five layouts pass. This
+amendment does not settle the separate pre-pilot human selection/allocation rule.

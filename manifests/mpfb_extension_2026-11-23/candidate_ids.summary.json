@@ -1,0 +1,17 @@
+{
+  "seed": 20261119,
+  "per_category_target": 10,
+  "categories": {
+    "MPFB_vision": {
+      "grouping_field": "layout_family_sha256",
+      "unique_valid_groups": 10,
+      "available_correct_groups": 5,
+      "available_incorrect_groups": 5,
+      "promoted_minority_groups": 4,
+      "selected_total": 10,
+      "selected_correct": 5,
+      "selected_incorrect": 5,
+      "unique_layouts_selected": 10
+    }
+  }
+}
