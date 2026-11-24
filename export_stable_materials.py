@@ -121,7 +121,7 @@ def export_materials(data_root, stability_path, manifest_path, output):
             'This is NOT a ready-to-import Gorilla task spreadsheet. It is also NOT\n'
             'the exact API image payload: the benchmark used JPEG conversion and low\n'
             'image detail. Verify the chosen human presentation before piloting.\n'
-            'Preserve layout-based allocation; all 119 items are not one participant list.\n'
+            'Preserve layout-based allocation; this archive is not one participant list.\n'
             'Keep this archive local unless stimulus redistribution is licensed.\n', encoding='utf-8')
         staging.rename(output)
     except BaseException:

@@ -1,0 +1,11 @@
+item_id,category,run1_valid,run1_advice_option,gold_answer,run1_correct,n_valid_runs,correctness_agreement_of_5,exact_option_agreement_of_5,stable
+MPFB_vision-00010,MPFB_vision,1,2,2,1,5,1,1,0
+MPFB_vision-00027,MPFB_vision,1,1,1,1,5,2,2,0
+MPFB_vision-00036,MPFB_vision,1,1,4,0,5,5,5,1
+MPFB_vision-00050,MPFB_vision,1,3,4,0,5,5,1,1
+MPFB_vision-00052,MPFB_vision,1,3,3,1,5,4,4,1
+MPFB_vision-00076,MPFB_vision,1,1,1,1,5,2,2,0
+MPFB_vision-00083,MPFB_vision,1,4,3,0,5,5,4,1
+MPFB_vision-00107,MPFB_vision,1,3,3,1,5,4,4,1
+MPFB_vision-00120,MPFB_vision,1,3,1,0,5,3,3,0
+MPFB_vision-00135,MPFB_vision,1,3,2,0,5,2,1,0

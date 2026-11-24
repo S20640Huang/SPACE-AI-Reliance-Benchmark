@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-24",
+  "extension_valid_repeat_responses": 40,
+  "original_source_hashes_verified_unchanged": {
+    "runs/full-001/scores.csv": "a230f6b3610a747be05bb0575bd56792c69de6843f8a5d71bd77f754778296a7",
+    "manifests/items.csv": "35a3065f83caafec562b98b53a4cd2ee94e8da9c141dcdf0939a7afb48839c48",
+    "config.json": "f421b4d357f576365407bddab93aa0f450b71ad2224524e960326ad5cf62412e",
+    "local/candidate_ids.json": "c2b65e6d977c03a7910aac5de0436484c51a9535480e933b274f0bd07b8b4a69",
+    "runs/stability_summary.json": "204195505ed7ab4be009fa3da4febb6835125ed385a3d47671474587634e3bb7"
+  },
+  "final_report_sha256": "b1faecc48d050a205eb1b2287fe404c98c88c1498809451be8ba9f7ab1b93a70",
+  "recovery_amendment_commit": "e20033a",
+  "original_candidate_freeze_commit": "75dbd9b"
+}

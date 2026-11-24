@@ -1,0 +1,28 @@
+{
+  "base_run_id": "full-001",
+  "repeat_run_ids": [
+    "mpfb-extension-r2",
+    "mpfb-extension-r3",
+    "mpfb-extension-r4",
+    "mpfb-extension-r5"
+  ],
+  "min_agreement": 4,
+  "total_candidates": 10,
+  "total_stable": 5,
+  "stable_item_ids": [
+    "MPFB_vision-00036",
+    "MPFB_vision-00050",
+    "MPFB_vision-00052",
+    "MPFB_vision-00083",
+    "MPFB_vision-00107"
+  ],
+  "categories": {
+    "MPFB_vision": {
+      "n_candidates": 10,
+      "n_stable": 5,
+      "n_stable_ai_correct": 2,
+      "n_stable_ai_incorrect": 3,
+      "mean_exact_option_agreement_of_5": 2.7
+    }
+  }
+}
