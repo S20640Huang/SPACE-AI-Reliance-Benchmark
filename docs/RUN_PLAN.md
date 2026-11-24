@@ -87,3 +87,26 @@ in runs/mpfb_extension_stability_summary.json and its CSV companion. Preserve th
 original runs, candidate list and stability summary unchanged. Publish the separate
 extension summary when complete, even if fewer than five layouts pass. This
 amendment does not settle the separate pre-pilot human selection/allocation rule.
+
+## MPFB bounded transport recovery amendment (2026-11-24)
+
+After standard transport retries, 34/40 extension responses are valid. Remaining:
+mpfb-extension-r3: MPFB_vision-00050 and MPFB_vision-00135 (timeouts);
+mpfb-extension-r5: MPFB_vision-00050, MPFB_vision-00107, MPFB_vision-00120,
+MPFB_vision-00135 (credit_balance_exhausted). Repeated 180-second timeouts with
+SDK max_retries=2 can incur unobserved server-side token charges. Local successful
+usage is not a complete billing record and must not be presented as total spend.
+
+Before further paid recovery, commit this transport amendment. recover_timeouts.py
+now accepts the frozen extension candidate file, defaults to sequential requests,
+900-second SDK timeout, zero SDK automatic retries, and at most six requests per
+invocation. Stop immediately on a non-200 or non-completed response, save the
+journal and score the affected run. Do not automatically rerun after this stop.
+The timeout is not a guaranteed total wall-clock deadline. This request cap is
+per invocation, not an account spending cap or a promise of successful completion.
+
+Scientific payload, 32768 maximum output tokens, first-run advice, candidate IDs,
+original metadata and all HTTP 200 records remain unchanged. Existing archived
+failures and new recovery journals preserve provenance. Four completed rounds are
+required before final extension reporting. Use dry-run validation before execute;
+no change to the original 119-item stability report.

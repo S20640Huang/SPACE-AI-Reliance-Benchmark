@@ -73,9 +73,9 @@ def verify_body(item: dict, root: Path, cfg: dict, out: Path) -> str:
     return body_hash
 
 
-def prepare(root: Path, run_ids: list[str]) -> list[dict]:
+def prepare(root: Path, run_ids: list[str], candidate_ids: Path | None = None) -> list[dict]:
     cfg = b.read_json(b.HERE / 'config.json')
-    frozen = b.read_json(b.HERE / 'local' / 'candidate_ids.json')
+    frozen = b.read_json(candidate_ids or (b.HERE / 'local' / 'candidate_ids.json'))
     jobs = []
     for run_id in run_ids:
         if not re.fullmatch(r'[A-Za-z0-9_-]+', run_id):
@@ -114,20 +114,35 @@ def prepare(root: Path, run_ids: list[str]) -> list[dict]:
     return jobs
 
 
+def recovery_succeeded(record: dict) -> bool:
+    if record.get('http_status') != 200:
+        return False
+    try:
+        return json.loads(record.get('response_text', '{}')).get('status') == 'completed'
+    except (ValueError, AttributeError):
+        return False
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--data-root', required=True, type=Path)
     ap.add_argument('--run-ids', nargs='+', default=['candidates-r4', 'candidates-r5'])
-    ap.add_argument('--timeout-seconds', type=int, default=600)
+    ap.add_argument('--timeout-seconds', type=int, default=900)
+    ap.add_argument('--candidate-ids', type=Path)
+    ap.add_argument('--max-requests', type=int, default=6)
     ap.add_argument('--execute', action='store_true', help='Send paid API requests; default is offline inspection.')
     args = ap.parse_args()
     if args.timeout_seconds <= 180:
         ap.error('Recovery timeout must exceed the original 180 seconds.')
     if len(args.run_ids) != len(set(args.run_ids)):
         ap.error('Duplicate run IDs')
-    jobs = prepare(args.data_root, args.run_ids)
+    jobs = prepare(args.data_root, args.run_ids, args.candidate_ids)
+    count = sum(len(j['items']) for j in jobs)
+    if args.max_requests < 1 or count > args.max_requests:
+        ap.error(f'Recovery needs {count} requests; exceeds the explicit request cap.')
     print(json.dumps({'mode': 'execute' if args.execute else 'dry_run',
-                      'timeout_seconds': args.timeout_seconds, 'concurrency': 1,
+                      'timeout_seconds': args.timeout_seconds, 'concurrency': 1, 'max_retries': 0,
+                      'max_requests': args.max_requests,
                       'retry_items': {j['run_id']: [x['item_id'] for x in j['items']] for j in jobs}}, indent=2), flush=True)
     if not args.execute:
         return
@@ -153,10 +168,10 @@ def main():
                        'original_metadata_sha256': meta_hash,
                        'original_timeout_seconds': job['cfg']['timeout_seconds'],
                        'effective_timeout_seconds': args.timeout_seconds, 'effective_concurrency': 1,
-                       'max_retries': job['cfg']['max_retries'],
+                       'original_max_retries': job['cfg']['max_retries'], 'max_retries': 0,
                        'items': [x['item_id'] for x in job['items']], 'results': []}
             b.write_json(folder / 'recovery.json', journal)
-            transport_cfg = dict(job['cfg'], timeout_seconds=args.timeout_seconds)
+            transport_cfg = dict(job['cfg'], timeout_seconds=args.timeout_seconds, max_retries=0)
             with b.make_client(transport_cfg) as client:
                 for item in job['items']:
                     item_id = item['item_id']
@@ -181,6 +196,9 @@ def main():
                                                'raw_sha256': b.digest((out / 'raw' / f'{item_id}.json').read_bytes())})
                     b.write_json(folder / 'recovery.json', journal)
                     print(f'{item_id}: HTTP {result.get("http_status")}, {result.get("transport_error", "response saved")}', flush=True)
+                    if not recovery_succeeded(result):
+                        b.score(args.data_root, job['cfg'], job['run_id'])
+                        raise SystemExit('Stopped after unsuccessful request. Do not automatically rerun; inspect the saved result first.')
             if b.digest((out / 'metadata.json').read_bytes()) != meta_hash:
                 raise ValueError('Original metadata changed unexpectedly.')
             b.score(args.data_root, job['cfg'], job['run_id'])

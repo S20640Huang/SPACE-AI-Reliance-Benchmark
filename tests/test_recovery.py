@@ -70,3 +70,37 @@ class RecoveryTests(unittest.TestCase):
                 'response_text': '{"error": {"code": "unknown_error"}}'})
             with self.assertRaises(ValueError):
                 select_timeouts(out, ['other'])
+
+    def test_recovery_stops_on_failure_without_sdk_retries(self):
+        import json
+        from contextlib import nullcontext
+        import recover_timeouts as recovery
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / 'runs/test'
+            b.write_json(out / 'metadata.json', {'unchanged': True})
+            cfg = {'timeout_seconds': 180, 'max_retries': 2}
+            job = {'run_id': 'test', 'out': out, 'cfg': cfg,
+                   'meta': {'git_commit': 'original'},
+                   'items': [{'item_id': i, 'question': []} for i in ['a', 'b', 'c']]}
+            for i in ['a', 'b', 'c']:
+                b.write_json(out / 'raw' / f'{i}.json', {'http_status': None, 'transport_error': 'APITimeoutError'})
+                b.write_json(out / 'requests' / f'{i}.json', {})
+            calls = []
+            def call(item, *args, **kwargs):
+                i = item['item_id']; calls.append(i)
+                result = ({'http_status': 200, 'response_text': json.dumps({'status': 'completed'})}
+                          if i == 'a' else {'http_status': None, 'transport_error': 'APITimeoutError'})
+                b.write_json(out / 'raw' / f'{i}.json', result)
+            argv = ['recover_timeouts.py', '--data-root', str(root), '--run-ids', 'test', '--execute']
+            with patch('sys.argv', argv), patch.dict('os.environ', {'OPENAI_API_KEY': 'TEST_ONLY'}), \
+                 patch.object(recovery, 'prepare', return_value=[job]), \
+                 patch.object(b, 'HERE', root), patch.object(b, 'git_commit', return_value='recovery'), \
+                 patch.object(recovery, 'verify_body'), patch.object(b, 'make_client', return_value=nullcontext(object())) as client, \
+                 patch.object(b, 'call_one', side_effect=call), patch.object(b, 'score'):
+                with self.assertRaises(SystemExit):
+                    recovery.main()
+            self.assertEqual(calls, ['a', 'b'])
+            self.assertEqual(client.call_args.args[0]['max_retries'], 0)
+            self.assertEqual(client.call_args.args[0]['timeout_seconds'], 900)
+            self.assertEqual(b.read_json(out / 'metadata.json'), {'unchanged': True})
